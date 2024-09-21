@@ -1,7 +1,7 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, effect, Inject, inject, Optional } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
-import { LanguageService } from './service/language.service';
+import { LanguageService, SERVER_LANG_TOKEN } from './service/language.service';
 
 @Component({
   selector: 'app-root',
@@ -16,10 +16,18 @@ export class AppComponent {
   languageService = inject(LanguageService);
   cookies = inject(SsrCookieService);
 
-  constructor() {
+  constructor(
+    @Optional()
+    @Inject(SERVER_LANG_TOKEN)
+    langServer: string
+  ) {
+    console.log({ langServer });
     console.log({ cookie: this.cookies.get('lang') });
 
-    const lang = this.cookies.check('lang') ? this.cookies.get('lang') : 'en';
+    const lang =
+      langServer ?? this.cookies.check('lang')
+        ? this.cookies.get('lang')
+        : 'en';
     this.languageService.changeLanguage(lang);
   }
 }
